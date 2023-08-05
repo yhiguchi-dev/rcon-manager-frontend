@@ -29,4 +29,4 @@ USER nonroot
 
 ENV PORT 3000
 
-ENTRYPOINT ["server.js"]
+CMD [ "server.js" ]
