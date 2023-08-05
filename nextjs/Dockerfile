@@ -11,7 +11,6 @@ RUN pnpm i
 
 FROM deps AS builder
 
-COPY frontend .
 RUN pnpm build
 
 FROM gcr.io/distroless/nodejs18-debian11:nonroot AS runner
