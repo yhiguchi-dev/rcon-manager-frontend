@@ -1,1 +1,1 @@
-# rcon-manager-frontend
+# minecraft-rcon-manager-frontend
