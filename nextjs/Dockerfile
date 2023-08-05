@@ -28,4 +28,4 @@ EXPOSE 3000
 
 ENV PORT 3000
 
-ENTRYPOINT ["node", "server.js"]
+ENTRYPOINT ["server.js"]
