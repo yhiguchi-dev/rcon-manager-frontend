@@ -8,7 +8,12 @@ type Props = {
 } & ComponentProps<"select">;
 
 const UserSelector = forwardRef<HTMLSelectElement, Props>(
-  async ({ onChange, defaultValue, users }, ref): Promise<ReactElement> => {
+  ({ onChange, defaultValue, users }, ref): ReactElement => {
+    if (!Array.isArray(users)) {
+      return (
+        <Select defaultValue={defaultValue} onChange={onChange} ref={ref} />
+      );
+    }
     const selectorOptions = users.map((value, index) => {
       return (
         <option key={index} value={value}>

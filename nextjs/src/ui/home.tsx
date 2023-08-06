@@ -10,7 +10,7 @@ import {
 import React, {
   type FormEvent,
   type PropsWithChildren,
-  type ReactElement,
+  type ReactElement, Suspense,
   useCallback,
   useState,
 } from "react";
@@ -40,7 +40,9 @@ const Home = ({ users }: PropsWithChildren<Props>): ReactElement => {
         <Stack spacing={2}>
           <Box>
             <FormLabel>ユーザー</FormLabel>
-            <UserSelector users={users} name="user" />
+            <Suspense fallback={<div>loading...</div>}>
+              <UserSelector users={users} name="user" />
+            </Suspense>
           </Box>
           <Box>
             <FormLabel>アイテム</FormLabel>
