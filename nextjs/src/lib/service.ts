@@ -1,7 +1,7 @@
-"use server";
 import { backendApi } from "@/lib/backend-api";
 
-const itemToUserAction = async (formData: FormData): Promise<void> => {
+const itemToUser = async (formData: FormData): Promise<void> => {
+  "use server";
   const user = formData.get("user");
   const itemId = formData.get("itemId");
   const amount = formData.get("amount");
@@ -15,6 +15,12 @@ const itemToUserAction = async (formData: FormData): Promise<void> => {
   throw Error("");
 };
 
-export const action = {
-  itemToUserAction,
+const getUser = async (): Promise<string[]> => {
+  "use server";
+  return await backendApi.getUser();
+};
+
+export const service = {
+  itemToUser,
+  getUser,
 };

@@ -17,7 +17,7 @@ import {
   useState,
 } from "react";
 
-import { action } from "@/lib/action";
+import { service } from "@/lib/service";
 import Form from "@/ui/form";
 import ItemSelector from "@/ui/item-selector";
 import UserSelector from "@/ui/user-selector";
@@ -58,7 +58,7 @@ const Home = (): ReactElement => {
   }, []);
   return (
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    <Form action={action.itemToUserAction} onFormInvalid={handleFormInvalid}>
+    <Form action={service.itemToUser} onFormInvalid={handleFormInvalid}>
       <FormControl isInvalid={isError}>
         <Stack spacing={2}>
           <Box>
