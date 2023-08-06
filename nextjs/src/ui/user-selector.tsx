@@ -1,15 +1,14 @@
+"use client";
 import { Select } from "@chakra-ui/react";
 import { type ComponentProps, forwardRef, type ReactElement } from "react";
 
-import { service } from "@/lib/service";
-
 type Props = {
   defaultValue?: string;
+  users: string[];
 } & ComponentProps<"select">;
 
 const UserSelector = forwardRef<HTMLSelectElement, Props>(
-  async ({ onChange, defaultValue }, ref): Promise<ReactElement> => {
-    const users = await service.getUser();
+  async ({ onChange, defaultValue, users }, ref): Promise<ReactElement> => {
     const selectorOptions = users.map((value, index) => {
       return (
         <option key={index} value={value}>

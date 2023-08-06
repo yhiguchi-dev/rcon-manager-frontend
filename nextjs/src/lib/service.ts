@@ -1,12 +1,14 @@
 "use server";
 import { backendApi } from "@/lib/backend-api";
 
-const itemToUser = async (formData: FormData): Promise<void> => {
+export const itemToUser = async (formData: FormData): Promise<void> => {
+  const url = process.env.BACKEND_URL;
   const user = formData.get("user");
   const itemId = formData.get("itemId");
   const amount = formData.get("amount");
   if (user !== null && itemId !== null && amount !== null) {
     await backendApi.postItemToUser({
+      url,
       user: user.toString(),
       itemId: itemId.toString(),
       amount: parseInt(amount.toString(), 10),
@@ -15,11 +17,7 @@ const itemToUser = async (formData: FormData): Promise<void> => {
   throw Error("");
 };
 
-const getUser = async (): Promise<string[]> => {
-  return await backendApi.getUser();
-};
-
-export const service = {
-  itemToUser,
-  getUser,
+export const getUser = async (): Promise<string[]> => {
+  const url = process.env.BACKEND_URL;
+  return await backendApi.getUser({ url });
 };

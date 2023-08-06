@@ -1,9 +1,9 @@
 import { http } from "@/lib/http";
 
-const getUser = async (): Promise<string[]> => {
+const getUser = async ({ url }: { url: string }): Promise<string[]> => {
   const { get } = http;
   const response = await get<string[]>({
-    url: `${process.env.BACKEND_URL}/users`,
+    url: `${url}/users`,
   });
   switch (response.type) {
     case "success":
@@ -14,10 +14,12 @@ const getUser = async (): Promise<string[]> => {
 };
 
 const postItemToUser = async ({
+  url,
   user,
   itemId,
   amount,
 }: {
+  url: string;
   user: string;
   itemId: string;
   amount: number;
@@ -28,7 +30,7 @@ const postItemToUser = async ({
     amount,
   };
   const response = await postNoBody({
-    url: `${process.env.BACKEND_URL}/users/${user}/item`,
+    url: `${url}/users/${user}/item`,
     requestBody,
   });
   switch (response.type) {
