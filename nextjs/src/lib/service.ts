@@ -1,7 +1,7 @@
+"use server";
 import { backendApi } from "@/lib/backend-api";
 
 const itemToUser = async (formData: FormData): Promise<void> => {
-  "use server";
   const user = formData.get("user");
   const itemId = formData.get("itemId");
   const amount = formData.get("amount");
@@ -16,7 +16,6 @@ const itemToUser = async (formData: FormData): Promise<void> => {
 };
 
 const getUser = async (): Promise<string[]> => {
-  "use server";
   return await backendApi.getUser();
 };
 
