@@ -2,16 +2,20 @@ import { http } from "@/lib/http";
 
 const getUser = async ({ url }: { url: string }): Promise<string[]> => {
   const { get } = http;
-  const response = await get<string[]>({
+  const response = await get<UserResponse>({
     url: `${url}/users`,
   });
   switch (response.type) {
     case "success":
-      return response.body;
+      return response.body.users;
     default:
       throw new Error("network error");
   }
 };
+
+interface UserResponse {
+  users: string[];
+}
 
 const postItemToUser = async ({
   url,
