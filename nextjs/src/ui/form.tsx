@@ -16,9 +16,6 @@ const Form = ({
   onFormInvalid,
   children,
 }: PropsWithChildren<Props>): ReactElement => {
-  const handleSubmit = useCallback((): void => {
-    console.log("submit");
-  }, []);
   const handleChange = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
       event.preventDefault();
@@ -33,12 +30,7 @@ const Form = ({
   );
 
   return (
-    <form
-      action={action}
-      onSubmit={handleSubmit}
-      onChange={handleChange}
-      noValidate
-    >
+    <form action={action} onChange={handleChange} noValidate>
       {children}
     </form>
   );

@@ -11,7 +11,6 @@ const ItemSelector = forwardRef<HTMLSelectElement, Props>(
   ({ onChange, defaultValue }, ref): ReactElement => {
     const selectorOptions = items.map((value, index) => {
       const { name, displayName } = value;
-      console.log(name);
       return (
         <option key={index} value={name}>
           {displayName}

@@ -6,6 +6,7 @@ export const itemToUser = async (formData: FormData): Promise<void> => {
   const user = formData.get("user");
   const itemId = formData.get("itemId");
   const amount = formData.get("amount");
+  console.log(formData);
   if (user !== null && itemId !== null && amount !== null) {
     await backendApi.postItemToUser({
       url,
@@ -14,7 +15,6 @@ export const itemToUser = async (formData: FormData): Promise<void> => {
       amount: parseInt(amount.toString(), 10),
     });
   }
-  throw Error("");
 };
 
 export const getUser = async (): Promise<string[]> => {
