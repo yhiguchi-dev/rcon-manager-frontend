@@ -10,7 +10,8 @@ import {
 import React, {
   type FormEvent,
   type PropsWithChildren,
-  type ReactElement, Suspense,
+  type ReactElement,
+  Suspense,
   useCallback,
   useState,
 } from "react";
