@@ -7,32 +7,19 @@ on:
   workflow_dispatch:
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    uses: yhiguchi-dev/reusable-workflow/.github/workflows/lint-with-pnpm.yaml@main
+    with:
+      node-version: ${{ matrix.node-version }}
+      lint-command: lint
+      working-directory: nextjs
     strategy:
+      fail-fast: false
       matrix:
         node-version:
           - 18
-    steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: pnpm
-          cache-dependency-path: ./nextjs/pnpm-lock.yaml
-      - name: Install dependencies
-        run: pnpm install
-        working-directory: nextjs
-      - name: Run lint
-        run: pnpm lint
-        working-directory: nextjs
-#      - name: Run test
-#        run: pnpm test
+
   build:
-    uses: yhiguchi-dev/reusable-workflow/.github/workflows/docker-image.yaml@main
+    uses: yhiguchi-dev/reusable-workflow/.github/workflows/docker-image-push-to-ghcr.yaml@main
     with:
       build-context: ${{ matrix.build-context }}
     needs:
