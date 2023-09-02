@@ -1,6 +1,6 @@
+import { SchemaObject } from "ajv/dist/ajv";
 import Ajv from "ajv/dist/jtd";
-import { type SchemaObject } from "ajv/lib/types";
-import { type JTDDataType } from "ajv/lib/types/jtd-schema";
+import { JTDDataType } from "ajv/dist/jtd";
 const ajv = new Ajv();
 
 export type JTDSchema = SchemaObject;
