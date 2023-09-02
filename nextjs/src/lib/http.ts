@@ -1,122 +1,115 @@
-const _get = async <T>({
+import { json, JTDSchema } from "@/lib/json";
+
+const _get = async ({
   url,
+  path,
   queries,
   headers,
-}: Omit<HttpRequest<T>, "method">): Promise<HttpResponse<T>> => {
-  const response = await send({ url, queries, method: "GET", headers });
-  return await resolve(response);
+}: Omit<HttpRequest, "method">): Promise<HttpResponse> => {
+  const response = await send({ url, path, queries, method: "GET", headers });
+  return resolve(response);
 };
 
-const _post = async <T, R>({
+const _post = async ({
   url,
+  path,
   headers,
   requestBody,
-}: Omit<HttpRequest<T>, "method">): Promise<HttpResponse<R>> => {
-  const response = await send({ url, method: "POST", headers, requestBody });
-  return await resolve(response);
+}: Omit<HttpRequest, "method">): Promise<HttpResponse> => {
+  const response = await send({
+    url,
+    path,
+    method: "POST",
+    headers,
+    requestBody: requestBody,
+  });
+  return resolve(response);
 };
 
-const _postWithNoResponseBody = async <T>({
+const _put = async ({
   url,
+  path,
   headers,
   requestBody,
-}: Omit<HttpRequest<T>, "method">): Promise<HttpResponse<void>> => {
-  const response = await send({ url, method: "POST", headers, requestBody });
-  return await resolveNoBody(response);
-};
-
-const _put = async <T>({
-  url,
-  headers,
-  requestBody,
-}: Omit<HttpRequest<T>, "method">): Promise<HttpResponse<void>> => {
-  const response = await send({ url, method: "PUT", headers, requestBody });
-  return await resolveNoBody(response);
+}: Omit<HttpRequest, "method">): Promise<HttpResponse> => {
+  const response = await send({
+    url,
+    path,
+    method: "PUT",
+    headers,
+    requestBody: requestBody,
+  });
+  return resolve(response);
 };
 
 const _delete = async ({
   url,
+  path,
   headers,
-}: Omit<HttpRequest<void>, "method">): Promise<HttpResponse<void>> => {
-  const response = await send({ url, method: "DELETE", headers });
-  return await resolveNoBody(response);
+}: Omit<HttpRequest, "method">): Promise<HttpResponse> => {
+  const response = await send({ url, path, method: "DELETE", headers });
+  return resolve(response);
 };
 
-const send = async <T>({
+const send = async ({
   url,
+  path,
   queries,
   method,
   headers,
   requestBody,
-}: HttpRequest<T>): Promise<Response> => {
+  timeout = 3000,
+}: HttpRequest): Promise<Response> => {
   const controller = new AbortController();
-  const timeout = setTimeout(() => {
+  const _timeout = setTimeout(() => {
     controller.abort();
-  }, 3000);
+  }, timeout);
   try {
-    const urlValue = new URL(url);
+    const urlValue = new URL(path, url);
     if (queries !== undefined) {
-      const _queries = Object.entries(queries)
-        .filter((value) => {
-          const [, v] = value;
-          return v !== undefined;
-        })
-        .reduce((previousValue, currentValue) => {
-          const [k, v] = currentValue;
-          return {
-            ...previousValue,
-            [k]: v,
-          };
-        }, {});
-      console.log(new URLSearchParams(_queries).toString());
-      urlValue.search = new URLSearchParams(_queries).toString();
+      console.log(new URLSearchParams(queries).toString());
+      urlValue.search = new URLSearchParams(queries).toString();
     }
+    const body = serializeRequestBody(requestBody);
     return await fetch(urlValue, {
       method,
       headers: {
         ...headers,
         "content-type": "application/json",
       },
-      body: JSON.stringify(requestBody),
+      body,
       signal: controller.signal,
       mode: "cors",
+      cache: "no-store",
     });
   } finally {
-    clearTimeout(timeout);
+    clearTimeout(_timeout);
   }
 };
 
-const resolve = async <T>(response: Response): Promise<HttpResponse<T>> => {
+const serializeRequestBody = (requestBody?: RequestBody) => {
+  if (requestBody !== undefined) {
+    const { serialize } = json;
+    return serialize(requestBody.schema, requestBody.data);
+  }
+  return undefined;
+};
+
+const resolve = (response: Response): HttpResponse => {
+  const body = async <T>(schema: JTDSchema): Promise<T> => {
+    const { parse } = json;
+    const responseJson: unknown = await response.json();
+    return parse<T>(schema, JSON.stringify(responseJson));
+  };
   if (response.ok) {
-    const body = (await response.json()) as T;
     return {
       type: "success",
       code: response.status,
       body,
     };
   }
-  return await resolveError(response);
-};
-
-const resolveNoBody = async (
-  response: Response,
-): Promise<HttpResponse<void>> => {
-  if (response.ok) {
-    return {
-      type: "success",
-      code: response.status,
-      body: undefined,
-    };
-  }
-  return await resolveError(response);
-};
-
-const resolveError = async <R>(
-  response: Response,
-): Promise<HttpResponse<R>> => {
   const code = response.status;
   if (code >= 400 && code <= 499) {
-    const body = await response.text();
     return {
       type: "clientError",
       code,
@@ -124,7 +117,6 @@ const resolveError = async <R>(
     };
   }
   if (code >= 500 && code <= 599) {
-    const body = await response.text();
     return {
       type: "serverError",
       code,
@@ -136,51 +128,47 @@ const resolveError = async <R>(
 
 type Method = "GET" | "POST" | "PUT" | "DELETE";
 
-type Headers = Record<string, string>;
-
-type Queries = Record<string, string | undefined>;
-
-interface HttpRequest<T> {
+interface HttpRequest {
   url: string;
-  queries?: Queries;
+  path: string;
+  queries?: Record<string, string>;
   method: Method;
-  headers?: Headers;
-  requestBody?: T;
+  headers?: Record<string, string>;
+  requestBody?: RequestBody;
+  timeout?: number;
 }
 
-interface Success<T> {
+interface RequestBody {
+  schema: JTDSchema;
+  data: unknown;
+}
+
+interface Success {
   type: "success";
   code: number;
-  body: T;
+  body: <T>(schema: JTDSchema) => Promise<T>;
 }
 
 interface ClientError {
   type: "clientError";
   code: number;
-  body: string;
+  body: <T>(schema: JTDSchema) => Promise<T>;
 }
 
 interface ServerError {
   type: "serverError";
   code: number;
-  body: string;
+  body: <T>(schema: JTDSchema) => Promise<T>;
 }
 
-interface UnknownError {
-  type: "unknownError";
-  cause: Error;
-}
-
-type HttpResponse<T> =
-  | Readonly<Success<T>>
+type HttpResponse =
+  | Readonly<Success>
   | Readonly<ClientError>
-  | Readonly<ServerError>
-  | Readonly<UnknownError>;
+  | Readonly<ServerError>;
 
 export const http = {
   get: _get,
   post: _post,
-  postNoBody: _postWithNoResponseBody,
   put: _put,
   delete: _delete,
 };
