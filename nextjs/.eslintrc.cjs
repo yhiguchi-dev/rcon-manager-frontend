@@ -1,6 +1,11 @@
 module.exports = {
-  extends: ["next/core-web-vitals", "standard-with-typescript", "prettier"],
-  plugins: ["unused-imports"],
+  extends: [
+    "plugin:@typescript-eslint/strict-type-checked",
+    "plugin:@typescript-eslint/stylistic-type-checked",
+    "next/core-web-vitals",
+    "prettier",
+  ],
+  plugins: ["@typescript-eslint", "import", "n", "promise", "unused-imports"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     project: true,
@@ -9,7 +14,6 @@ module.exports = {
   root: true,
   rules: {
     "unused-imports/no-unused-imports": "error",
-    "unused-imports/no-unused-vars": "error",
     "import/order": [
       "error",
       {
