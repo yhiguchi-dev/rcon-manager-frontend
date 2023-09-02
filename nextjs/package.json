@@ -1,5 +1,5 @@
 {
-  "name": "minecraft-rcon-manager-frontend",
+  "name": "minecraft-admin-frontend",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -33,7 +33,6 @@
     "eslint-plugin-n": "16.0.2",
     "eslint-plugin-promise": "6.1.1",
     "eslint-plugin-unused-imports": "3.0.0",
-    "msw": "1.2.5",
     "next": "13.4.19",
     "postcss": "8.4.29",
     "prettier": "3.0.3",
