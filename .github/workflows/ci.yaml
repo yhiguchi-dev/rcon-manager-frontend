@@ -23,7 +23,6 @@ jobs:
     with:
       build-context: ${{ matrix.build-context }}
     needs:
-      - super-linter
       - lint
     strategy:
       fail-fast: false
