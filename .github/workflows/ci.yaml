@@ -6,10 +6,6 @@ on:
       - main
   workflow_dispatch:
 jobs:
-  super-linter:
-    uses: yhiguchi-dev/reusable-workflow/.github/workflows/lint-with-super-linter.yaml@main
-    with:
-      lint-mode: typescript
   lint:
     uses: yhiguchi-dev/reusable-workflow/.github/workflows/lint-with-pnpm.yaml@main
     with:
