@@ -30,7 +30,7 @@ jobs:
       - name: Set Version
         id: set-version
         run: |
-          echo "version=$(pnpm pkg get version | tr -d \")" >> $GITHUB_OUTPUT
+          echo "version=$(pnpm pkg get version | tr -d \")" >> "${GITHUB_OUTPUT}"
         working-directory: nextjs
   build:
     uses: yhiguchi-dev/reusable-workflow/.github/workflows/docker-image-push-to-ghcr.yaml@main
