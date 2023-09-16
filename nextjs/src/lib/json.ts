@@ -1,6 +1,7 @@
 import { SchemaObject } from "ajv/dist/ajv";
 import Ajv from "ajv/dist/jtd";
 import { JTDDataType } from "ajv/dist/jtd";
+
 const ajv = new Ajv();
 
 export type JTDSchema = SchemaObject;
@@ -11,7 +12,10 @@ const serialize = (schema: JTDSchema, data: unknown): string => {
     const serializer = ajv.compileSerializer(schema);
     return serializer(data);
   } catch (e: unknown) {
-    throw Error();
+    const options = {
+      cause: e,
+    };
+    throw JSONSerializeError(`data serialize failed: ${String(data)}`, options);
   }
 };
 
@@ -19,7 +23,7 @@ const parse = <T>(schema: JTDSchema, json: string): T => {
   const parser = ajv.compileParser<T>(schema);
   const parsed = parser(json);
   if (parsed === undefined) {
-    throw Error();
+    throw JSONParseError(`json parse failed: ${json}`);
   }
   return parsed;
 };
