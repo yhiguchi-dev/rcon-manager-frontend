@@ -14,7 +14,7 @@ FROM deps AS builder
 COPY . .
 RUN pnpm build
 
-FROM gcr.io/distroless/nodejs18-debian11:nonroot AS runner
+FROM gcr.io/distroless/nodejs20-debian11:nonroot AS runner
 
 WORKDIR /app
 
