@@ -20,6 +20,8 @@ jobs:
 
   pre-build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
@@ -32,8 +34,9 @@ jobs:
     uses: yhiguchi-dev/reusable-workflow/.github/workflows/docker-image-push-to-ghcr.yaml@main
     with:
       build-context: ${{ matrix.build-context }}
-      version: ${{ steps.set-version.outputs.version }}
+      version: ${{ needs.pre-build.outputs.version }}
     needs:
+      - pre-build
       - lint
     strategy:
       fail-fast: false
