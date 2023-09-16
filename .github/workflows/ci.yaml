@@ -18,10 +18,20 @@ jobs:
         node-version:
           - 20
 
+  pre-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Set Version
+        run: echo "VERSION=$(pnpm pkg get version | tr -d \")" >> $GITHUB_ENV
   build:
     uses: yhiguchi-dev/reusable-workflow/.github/workflows/docker-image-push-to-ghcr.yaml@main
     with:
       build-context: ${{ matrix.build-context }}
+      version: ${{ env.VERSION }}
     needs:
       - lint
     strategy:
