@@ -21,7 +21,7 @@ const _post = async ({
     path,
     method: "POST",
     headers,
-    requestBody: requestBody,
+    requestBody,
   });
   return resolve(response);
 };
@@ -37,7 +37,7 @@ const _put = async ({
     path,
     method: "PUT",
     headers,
-    requestBody: requestBody,
+    requestBody,
   });
   return resolve(response);
 };
@@ -58,6 +58,9 @@ const send = async ({
   method,
   headers,
   requestBody,
+  mode = "cors",
+  cache = "no-store",
+  credentials = "same-origin",
   timeout = 3000,
 }: HttpRequest): Promise<Response> => {
   const controller = new AbortController();
@@ -79,8 +82,9 @@ const send = async ({
       },
       body,
       signal: controller.signal,
-      mode: "cors",
-      cache: "no-store",
+      mode,
+      cache,
+      credentials,
     });
   } finally {
     clearTimeout(_timeout);
@@ -123,10 +127,13 @@ const resolve = (response: Response): HttpResponse => {
       body,
     };
   }
-  throw new Error("unknown http status");
+  throw UnknownHttpStatusError(code, `unknown http status code:${code}`);
 };
 
 type Method = "GET" | "POST" | "PUT" | "DELETE";
+type Mode = RequestMode;
+type Cache = RequestCache;
+type Credentials = RequestCredentials;
 
 interface HttpRequest {
   url: string;
@@ -135,6 +142,9 @@ interface HttpRequest {
   method: Method;
   headers?: Record<string, string>;
   requestBody?: RequestBody;
+  mode?: Mode;
+  cache?: Cache;
+  credentials?: Credentials;
   timeout?: number;
 }
 
