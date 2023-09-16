@@ -27,6 +27,12 @@ jobs:
       - uses: pnpm/action-setup@v2
         with:
           version: 8
+      - name: Use Node.js ${{ inputs.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: pnpm
+          cache-dependency-path: ./${{ inputs.working-directory }}/pnpm-lock.yaml
       - name: Set Version
         id: set-version
         run: echo "version=$(pnpm pkg get version | tr -d \")" >> $GITHUB_OUTPUT
