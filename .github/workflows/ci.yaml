@@ -18,11 +18,27 @@ jobs:
         node-version:
           - 20
 
+  pre-build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Set Version
+        id: set-version
+        run: |
+          echo "version=$(pnpm pkg get version | tr -d \")" >> "${GITHUB_OUTPUT}"
+        working-directory: nextjs
   build:
     uses: yhiguchi-dev/reusable-workflow/.github/workflows/docker-image-push-to-ghcr.yaml@main
     with:
       build-context: ${{ matrix.build-context }}
+      version: ${{ needs.pre-build.outputs.version }}
     needs:
+      - pre-build
       - lint
     strategy:
       fail-fast: false
