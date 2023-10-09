@@ -1,5 +1,5 @@
 name: CI
-run-name: Push ${{ github.workflow }} (${{ github.ref_name }})
+run-name: Push Docker Image
 on:
   pull_request:
     branches:
@@ -18,7 +18,7 @@ jobs:
         node-version:
           - 20
 
-  pre-build:
+  pre-build-and-push:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.set-version.outputs.version }}
@@ -32,13 +32,13 @@ jobs:
         run: |
           echo "version=$(pnpm pkg get version | tr -d \")" >> "${GITHUB_OUTPUT}"
         working-directory: nextjs
-  build:
+  build-and-push:
     uses: yhiguchi-dev/reusable-workflow/.github/workflows/docker-image-push-to-ghcr.yaml@main
     with:
       build-context: ${{ matrix.build-context }}
-      version: ${{ needs.pre-build.outputs.version }}
+      version: ${{ needs.pre-build-and-push.outputs.version }}
     needs:
-      - pre-build
+      - pre-build-and-push
       - lint
     strategy:
       fail-fast: false
